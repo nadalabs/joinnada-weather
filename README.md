@@ -1,85 +1,89 @@
-# Country Weather Explorer — Pairing Exercise
+# Country Weather Explorer - Pairing Exercise
 
-## Overview
+Build a small front-end app in a **45-minute pairing session**. The goal is not pixel perfection; the goal is to show strong state modeling, resilient async flows, and clear product thinking under time constraints.
 
-You have **45 minutes** to build a small front-end app while pairing with your interviewer. The app lets a user select a country, then chains together multiple API calls to display weather data for that country's capital.
+## What You Are Building
 
-This is not a "get it pixel-perfect" exercise. We care about **how you model state**, **how you handle things going wrong**, and **how you think out loud** while building.
+A single-page app with a **3-hop data chain**:
 
-You're encouraged to use AI coding tools (Copilot, Cursor, etc.) during the exercise.
+1. **Country** - Select a country from a searchable list
+2. **Geocode** - Resolve that country's capital to latitude/longitude
+3. **Weather** - Fetch current weather for those coordinates
 
----
+Each hop depends on the previous one, and any step can fail.
 
-## The Problem
+## Preview
 
-Build a single-page app with a **3-hop data chain**:
+![Country Weather Explorer app preview](./docs/images/country-weather-explorer.png)
 
-1. **Country** → User selects a country from a list
-2. **Geocode** → Resolve the capital city to geographic coordinates (lat/lon)
-3. **Weather** → Fetch current weather for those coordinates
+> Screenshot path expected in this repo: `docs/images/country-weather-explorer.png`
 
-Each hop depends on the previous one. Things can fail at any point in the chain.
+## Design References
 
----
+- Figma design: <https://www.figma.com/design/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?node-id=1-4>
+- Figma prototype: <https://www.figma.com/proto/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?page-id=0%3A1&node-id=1-4&viewport=-920%2C-922%2C0.92&t=t4JwMYWp39BKQ0VV-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1%3A4>
 
-## APIs (all free, no auth required)
+## APIs (Free, No Auth)
 
-### 1. REST Countries — Country list + capital
+### 1) REST Countries - Country list + capital
 
+`GET https://restcountries.com/v3.1/all?fields=name,cca2,capital,region`
+
+- `capital` is an array; some countries have no listed capital
+- Returns `name`, `cca2`, `capital`, and `region`
+- Docs: <https://restcountries.com>
+
+### 2) Open-Meteo Geocoding - Capital -> coordinates
+
+`GET https://geocoding-api.open-meteo.com/v1/search?name={CAPITAL}&count=10&language=en&countryCode={CCA2}`
+
+- Can return multiple results for one city name
+- Docs: <https://open-meteo.com/en/docs/geocoding-api>
+
+### 3) Open-Meteo Forecast - Coordinates -> weather
+
+`GET https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`
+
+- Docs: <https://open-meteo.com/en/docs>
+
+## API Quick Reference
+
+Use these commands to validate responses fast during the exercise.
+
+```bash
+# Countries
+curl "https://restcountries.com/v3.1/all?fields=name,cca2,capital,region" | head -c 500
+
+# Geocode (example: Canberra, AU)
+curl "https://geocoding-api.open-meteo.com/v1/search?name=Canberra&count=10&language=en&countryCode=AU"
+
+# Weather (example: Canberra coords)
+curl "https://api.open-meteo.com/v1/forecast?latitude=-35.28&longitude=149.13&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto"
 ```
-GET https://restcountries.com/v3.1/all?fields=name,cca2,capital,region
-```
-
-- `capital` is an array; some countries may have no capital listed
-- Returns country name, ISO code (`cca2`), capital, and region
-- Docs: https://restcountries.com
-
-### 2. Open-Meteo Geocoding — Capital name → coordinates
-
-```
-GET https://geocoding-api.open-meteo.com/v1/search?name={CAPITAL}&count=10&language=en&countryCode={CCA2}
-```
-
-- May return **multiple results** for a given capital name
-- Docs: https://open-meteo.com/en/docs/geocoding-api
-
-### 3. Open-Meteo Forecast — Coordinates → weather
-
-```
-GET https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto
-```
-
-- Docs: https://open-meteo.com/en/docs
-
----
 
 ## Tech Stack
 
-- **Next.js** (App Router)
-- **TypeScript** (strongly preferred)
-- **Tailwind CSS**
-- shadcn/ui components are available if you want them
+- Next.js (App Router)
+- TypeScript (strongly preferred)
+- Tailwind CSS
+- shadcn/ui components are available if useful
 
----
-
-## What We Want to See
+## Evaluation Criteria
 
 ### Must-haves
 
-- A **country selector** (dropdown, combobox, or similar)
-- A **results panel** showing the chain of data: country info → geocode result → weather
-- **Graceful handling when things break** — if one hop fails, still show what you have
-- Some way to see **where data came from** (which API, when it was fetched)
-- Handle the case where **geocoding returns multiple candidates**
+- A country selector (dropdown/combobox)
+- A results panel showing country -> geocode -> weather
+- Graceful failure handling at each hop
+- Visibility into data provenance (which API returned what, and when)
+- Handling of ambiguous geocode results (multiple candidates)
 
-### Things we'll talk about
+### Discussion prompts
 
-- What happens if the user switches countries rapidly?
-- Where does caching make sense?
-- How would you extend this to compare two countries side-by-side?
-- Where would you add observability in production?
-
----
+- What happens if the user changes countries rapidly?
+- Where does caching provide the most value?
+- How would you evolve this to compare two countries side-by-side?
+- Where would you add production observability?
 
 ## Getting Started
 
@@ -88,16 +92,14 @@ npm install
 npm run dev
 ```
 
-For tests (if you get to one):
+Optional test command:
 
 ```bash
 npm test
 ```
 
----
-
 ## What Success Looks Like
 
-At the end of 45 minutes, we expect to see a working chain from country → geocode → weather, with thoughtful handling of the messy middle — loading, errors, ambiguity, and state.
+By the end of the session, the app should complete the full country -> geocode -> weather flow with thoughtful handling of loading, errors, ambiguity, and state transitions.
 
-We'll spend the last ~10 minutes talking through tradeoffs and extensions. Unfinished code with a clear direction is better than complete code with unexamined assumptions.
+Clear tradeoff reasoning matters more than perfect completeness.
