@@ -16,12 +16,10 @@ Each hop depends on the previous one, and any step can fail.
 
 ![Country Weather Explorer app preview](./docs/images/country-weather-explorer.png)
 
-> Screenshot path expected in this repo: `docs/images/country-weather-explorer.png`
-
 ## Design References
 
-- Figma design: <https://www.figma.com/design/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?node-id=1-4>
-- Figma prototype: <https://www.figma.com/proto/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?page-id=0%3A1&node-id=1-4&viewport=-920%2C-922%2C0.92&t=t4JwMYWp39BKQ0VV-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1%3A4>
+- [Design file](https://www.figma.com/design/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?node-id=1-4)
+- [Interactive prototype](https://www.figma.com/proto/yxIDUUzF4FMb1sadmy5srG/Country-Weather-Explorer?page-id=0%3A1&node-id=1-4&viewport=-920%2C-922%2C0.92&t=t4JwMYWp39BKQ0VV-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1%3A4)
 
 ## APIs (Free, No Auth)
 
