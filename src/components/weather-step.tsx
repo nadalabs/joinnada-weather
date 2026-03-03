@@ -2,11 +2,19 @@
 
 import { Loader2, Thermometer, Wind } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { getWeatherCodeInfo } from "@/lib/weather-codes";
 import type { ChainState } from "@/lib/types";
 
+type WeatherStepState = Extract<
+  ChainState,
+  | { status: "loadingWeather" }
+  | { status: "weatherSuccess" }
+  | { status: "weatherError" }
+>;
+
 interface WeatherStepProps {
-  state: ChainState;
+  state: WeatherStepState;
 }
 
 export function WeatherStep({ state }: WeatherStepProps) {
@@ -30,7 +38,7 @@ export function WeatherStep({ state }: WeatherStepProps) {
       return (
         <div className="flex items-center gap-5">
           <div className="flex flex-col items-center gap-2">
-            <Icon className="h-8 w-8 text-amber-500" />
+            <Icon className={cn("h-8 w-8", info.iconColor)} />
             <span className="text-xs leading-4 text-gray-500">
               {info.label}
             </span>

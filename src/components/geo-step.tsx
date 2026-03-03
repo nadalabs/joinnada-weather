@@ -5,8 +5,18 @@ import { Loader2, Navigation } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChainState, GeoResult } from "@/lib/types";
 
+type GeoStepState = Extract<
+  ChainState,
+  | { status: "loadingGeo" }
+  | { status: "geoError" }
+  | { status: "geoAmbiguous" }
+  | { status: "loadingWeather" }
+  | { status: "weatherSuccess" }
+  | { status: "weatherError" }
+>;
+
 interface GeoStepProps {
-  state: ChainState;
+  state: GeoStepState;
   onCandidateSelect: (geo: GeoResult) => void;
 }
 
@@ -17,19 +27,17 @@ function CandidateRow({
 }: {
   candidate: GeoResult;
   selected: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex h-16 w-full items-center gap-3 rounded-[10px] px-3 text-left outline outline-1 outline-offset-[-1px] transition-colors",
-        selected
-          ? "bg-gray-950/5 outline-teal-900 shadow-[0px_0px_0px_1px_rgba(3,2,19,0.20)]"
-          : "outline-black/10 hover:bg-gray-50"
-      )}
-    >
+  const classes = cn(
+    "flex h-16 w-full items-center gap-3 rounded-[10px] px-3 text-left outline outline-1 outline-offset-[-1px] transition-colors",
+    selected
+      ? "bg-gray-950/5 outline-teal-900 shadow-[0px_0px_0px_1px_rgba(3,2,19,0.20)]"
+      : "outline-black/10 hover:bg-gray-50"
+  );
+
+  const content = (
+    <>
       <Navigation
         className={cn(
           "h-4 w-4 shrink-0",
@@ -54,6 +62,20 @@ function CandidateRow({
           Selected
         </span>
       )}
+    </>
+  );
+
+  if (selected) {
+    return (
+      <div className={classes} aria-label={`Selected: ${candidate.name}`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={classes}>
+      {content}
     </button>
   );
 }
@@ -95,11 +117,7 @@ export function GeoStep({ state, onCandidateSelect }: GeoStepProps) {
     case "weatherError":
       return (
         <div className="flex flex-col gap-2">
-          <CandidateRow
-            candidate={state.geo}
-            selected={true}
-            onClick={() => {}}
-          />
+          <CandidateRow candidate={state.geo} selected />
         </div>
       );
 

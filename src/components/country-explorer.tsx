@@ -1,12 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
 import { CountrySelector } from "@/components/country-selector";
 import { DataChain } from "@/components/data-chain";
 import { useCountries } from "@/hooks/use-countries";
 import { useWeatherChain } from "@/hooks/use-weather-chain";
-import type { Country } from "@/lib/types";
 
 export function CountryExplorer() {
   const {
@@ -15,16 +12,16 @@ export function CountryExplorer() {
     error: countriesError,
   } = useCountries();
   const { state, selectCountry, selectGeoCandidate } = useWeatherChain();
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
-  const selectorDisabled = useMemo(
-    () => state.status === "loadingGeo" || state.status === "loadingWeather",
-    [state.status]
-  );
+  const selectedCountry =
+    state.status !== "idle" ? state.country : null;
+
+  const selectorDisabled =
+    state.status === "loadingGeo" || state.status === "loadingWeather";
 
   return (
     <main className="min-h-screen bg-zinc-100">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-10">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-10 md:max-w-2xl md:px-6">
         <header className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-medium tracking-tight text-neutral-700">
             Country Weather Explorer
@@ -47,16 +44,12 @@ export function CountryExplorer() {
             disabled={selectorDisabled}
             isLoading={countriesLoading}
             error={countriesError}
-            onSelect={(country) => {
-              setSelectedCountry(country);
-              void selectCountry(country);
-            }}
+            onSelect={(country) => void selectCountry(country)}
           />
         </div>
 
         <DataChain
           state={state}
-          country={selectedCountry}
           onGeoCandidateSelect={(geo) => void selectGeoCandidate(geo)}
         />
       </div>
